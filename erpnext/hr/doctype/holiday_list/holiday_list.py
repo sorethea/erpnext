@@ -17,7 +17,9 @@ class OverlapError(frappe.ValidationError):
 class HolidayList(Document):
 	def validate(self):
 		self.validate_days()
-		self.total_holidays = len(self.holidays)
+		#self.total_holidays = len(self.holidays)
+		if(len(self.holidays)==0):
+			self.total_holidays = 0
 
 	@frappe.whitelist()
 	def get_weekly_off_dates(self):
@@ -34,7 +36,12 @@ class HolidayList(Document):
 			ch.description = self.weekly_off
 			ch.holiday_date = d
 			ch.weekly_off = 1
+			ch.half_day = self.half_day
 			ch.idx = last_idx + i + 1
+			if ch.half_day:
+				self.total_holidays +=0.5
+			else:
+				self.total_holidays +=1
 
 	def validate_values(self):
 		if not self.weekly_off:
